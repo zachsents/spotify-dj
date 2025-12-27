@@ -51,7 +51,7 @@ export async function getCurrentTrack(): Promise<SpotifyTrack | null> {
 export async function showNotification(message: string): Promise<void> {
   await $`osascript -e ${`display notification "${message.replace(
     /"/g,
-    '\\"',
+    '\\"'
   )}" with title "Spotify DJ"`}`
 }
 
@@ -81,19 +81,36 @@ export async function setSpotifyVolume(volume: number): Promise<void> {
 
 /** Smoothly fade volume from current to target over duration. */
 async function fadeVolume(from: number, to: number): Promise<void> {
-  const stepDuration = FADE_DURATION_MS / FADE_STEPS
-  const volumeStep = (to - from) / FADE_STEPS
+  const stepInterval = FADE_DURATION_MS / FADE_STEPS
+  const startTime = performance.now()
 
-  for (let i = 1; i <= FADE_STEPS; i++) {
-    await setSpotifyVolume(from + volumeStep * i)
-    await Bun.sleep(stepDuration)
+  for (let step = 1; step <= FADE_STEPS; step++) {
+    const targetTime = startTime + step * stepInterval
+    const elapsed = performance.now() - startTime
+
+    // Calculate volume based on actual elapsed time, not step count
+    const progress = Math.min(elapsed / FADE_DURATION_MS, 1)
+    const targetVolume =
+      from + (to - from) * Math.max(progress, step / FADE_STEPS)
+
+    await setSpotifyVolume(targetVolume)
+
+    // Only sleep if we're ahead of schedule
+    const now = performance.now()
+    const timeUntilNextStep = targetTime - now
+    if (timeUntilNextStep > 5) {
+      await Bun.sleep(timeUntilNextStep)
+    }
   }
+
+  // Ensure we hit the final target
+  await setSpotifyVolume(to)
 }
 
 /** Temporarily dip volume with smooth fade, run a callback, then restore. */
 export async function withVolumeDip<T>(
   dipTo: number,
-  fn: () => Promise<T>,
+  fn: () => Promise<T>
 ): Promise<T> {
   const originalVolume = await getSpotifyVolume()
 
