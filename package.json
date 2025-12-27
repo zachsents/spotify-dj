@@ -1,0 +1,20 @@
+{
+  "name": "spotify-dj",
+  "type": "module",
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "start": "bun run src/index.ts",
+    "build": "bun build src/toggle.ts --outfile dist/toggle.js --target bun --banner \"$(cat raycast-header.txt)\"",
+    "build:raycast": "bun run build && cp dist/toggle.js ~/Documents/Raycast\\ Scripts/spotify-dj.js",
+    "check": "bunx tsc --noEmit && bunx biome check --write src/"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.10",
+    "@types/bun": "latest"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^3.0.1",
+    "ai": "^6.0.3",
+    "openai": "^6.15.0"
+  }
+}

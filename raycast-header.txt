@@ -1,0 +1,8 @@
+#!/usr/bin/env bun
+
+// Required parameters:
+// @raycast.schemaVersion 1
+// @raycast.title Toggle Spotify DJ
+// @raycast.mode inline
+// @raycast.description Toggle AI-powered Spotify DJ that announces tracks
+
