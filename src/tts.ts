@@ -5,7 +5,9 @@ import { type Subprocess, spawn } from "bun"
 import OpenAI from "openai"
 import { TTS_MODEL, TTS_VOICE, TTS_VOLUME } from "./config.ts"
 
-const openai = new OpenAI()
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
 
 export type Voice =
   | "alloy"

@@ -1,5 +1,10 @@
-import { openai } from "@ai-sdk/openai"
+import { createOpenAI } from "@ai-sdk/openai"
 import { generateText } from "ai"
+
+const openai = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
+
 import {
   DJ_HISTORY_COUNT,
   DJ_MAX_TOKENS,
@@ -23,7 +28,7 @@ export async function generateDjCommentary(
     artist: string
     album: string
   },
-  context: DjContext = {},
+  context: DjContext = {}
 ): Promise<string> {
   const recentAnnouncements = getRecentAnnouncements(DJ_HISTORY_COUNT)
   const historyContext = formatHistoryContext(recentAnnouncements)
@@ -58,7 +63,9 @@ Examples of BAD intros (don't do this):
 
 ${historyContext}
 ${interruptionContext}`,
-    prompt: `Introduce "${track.name}" by ${track.artist}${track.album ? ` (album: "${track.album}")` : ""}.`,
+    prompt: `Introduce "${track.name}" by ${track.artist}${
+      track.album ? ` (album: "${track.album}")` : ""
+    }.`,
   })
 
   return text.trim()
@@ -71,7 +78,9 @@ function formatHistoryContext(announcements: Announcement[]): string {
 
   const lines = announcements.map(
     (a, i) =>
-      `${i + 1}. "${a.trackName}" by ${a.artistName} - Your intro: "${a.commentary}"`,
+      `${i + 1}. "${a.trackName}" by ${a.artistName} - Your intro: "${
+        a.commentary
+      }"`
   )
 
   return `Recent intros (avoid repeating yourself):
