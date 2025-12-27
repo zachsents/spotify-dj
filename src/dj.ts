@@ -28,7 +28,7 @@ export async function generateDjCommentary(
     artist: string
     album: string
   },
-  context: DjContext = {}
+  context: DjContext = {},
 ): Promise<string> {
   const recentAnnouncements = getRecentAnnouncements(DJ_HISTORY_COUNT)
   const historyContext = formatHistoryContext(recentAnnouncements)
@@ -80,7 +80,7 @@ function formatHistoryContext(announcements: Announcement[]): string {
     (a, i) =>
       `${i + 1}. "${a.trackName}" by ${a.artistName} - Your intro: "${
         a.commentary
-      }"`
+      }"`,
   )
 
   return `Recent intros (avoid repeating yourself):
